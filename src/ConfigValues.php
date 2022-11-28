@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fi1a\Config;
 
-use Fi1a\Collection\DataType\IPathAccess;
+use Fi1a\Collection\DataType\PathAccess;
 
 /**
  * Значения конфигурации
  */
-interface ConfigValuesInterface extends IPathAccess
+class ConfigValues extends PathAccess implements ConfigValuesInterface
 {
 }

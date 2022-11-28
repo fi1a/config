@@ -14,12 +14,12 @@ use Fi1a\Config\Writers\WriterInterface;
 interface ConfigInterface
 {
     /**
-     * Загрузка значений конфигурации
+     * Загружает и возвращает значения конфигурации
      */
-    public function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface;
+    public static function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface;
 
     /**
-     * Запист значений конфигурации
+     * Запись значений конфигурации
      */
-    public function write(ConfigValuesInterface $values, WriterInterface $writer): bool;
+    public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool;
 }
