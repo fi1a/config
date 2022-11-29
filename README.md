@@ -45,7 +45,7 @@ Config::write($config, $parser, $writer); // true
 
 ## Пример загрузки конфигурационных файлов
 
-Значения можно получить из нескольких файлов используя метод ```Fi1a\Config\Config::batchLoad```
+Значения можно получить из нескольких файлов, используя метод ```Fi1a\Config\Config::batchLoad```
 и передав массив с объектами ```Fi1a\Config\Readers\ReaderInterface``` для чтения из файла и
 ```Fi1a\Config\Parsers\ParserInterface``` для парсинга:
 
@@ -77,7 +77,7 @@ $config->get('path:to:value', true);
 ## Класс со значениями
 
 Методы   ```Fi1a\Config\Config::load``` и ```Fi1a\Config\Config::batchLoad``` возвращают
-объект ```Fi1a\Config\ConfigValues``` реализующий интерфейс ```Fi1a\Collection\DataType\IPathAccess```
+объект ```Fi1a\Config\ConfigValues```, реализующий интерфейс ```Fi1a\Collection\DataType\IPathAccess```
 из пакета [fi1a/collection](https://github.com/fi1a/collection).
 
 Данный класс позволяет получать доступ к ключам массива по пути (foo:bar:baz).
@@ -99,7 +99,7 @@ $register->has('foo:bar:baz:bat'); // false
 
 ## Чтение
 
-За чтение конфигураций отвечают классы реализующие интерфейс ```Fi1a\Config\Readers\ReaderInterface```.
+За чтение конфигураций отвечают классы, реализующие интерфейс ```Fi1a\Config\Readers\ReaderInterface```.
 
 ## Чтение конфигурационного файла
 
@@ -130,10 +130,10 @@ $config->set('path:to:value', 'value');
 Класс ```Fi1a\Config\Readers\DirectoryReader``` осуществляет чтение файлов конфигураций из переданной директории по маске.
 Аргументы конструктора:
 
-| Аргумент              | Описание               |
-|-----------------------|------------------------|
-| string $directoryPath | Путь до директории     |
-| string $regex         | Макска для имен файлов |
+| Аргумент              | Описание                                    |
+|-----------------------|---------------------------------------------|
+| string $directoryPath | Путь до директории                          |
+| string $regex         | Регулярное выражение. Маска для имен файлов |
 
 ```php
 use Fi1a\Config\Config;
@@ -157,7 +157,7 @@ $config->set('path:to:value', 'value');
 
 ## Запись конфигурационного файла
 
-Класс ```Fi1a\Config\Writers\FileWriter``` осуществляет запись кодированной строки в файла.
+Класс ```Fi1a\Config\Writers\FileWriter``` осуществляет запись кодированной строки в файл.
 
 | Аргумент         | Описание               |
 |------------------|------------------------|
@@ -182,7 +182,7 @@ Config::write($config, $parser, $writer); // true
 
 ## Кодирование
 
-За кодирование конфигураций отвечают классы реализующие интерфейс ```Fi1a\Config\Parsers\ParserInterface```.
+За кодирование конфигураций отвечают классы, реализующие интерфейс ```Fi1a\Config\Parsers\ParserInterface```.
 
 ## Создание объекта парсера на основе типа файла
 
