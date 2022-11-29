@@ -24,7 +24,6 @@ composer require fi1a/config ~1.0
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 use Fi1a\Config\Writers\FileWriter;
@@ -36,7 +35,7 @@ $writer = new FileWriter($filePath);
 
 $parser = new PHPParser();
 
-$config = Config::load($reader, $parser); // ConfigValuesInterface
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
@@ -52,7 +51,6 @@ Config::write($config, $parser, $writer); // true
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 
@@ -71,7 +69,7 @@ $config = Config::batchLoad([
         new FileReader(__DIR__ . '/config3.php'),
         $parser,
     ],
-]); // ConfigValuesInterface
+]); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 ```
@@ -113,7 +111,6 @@ $register->has('foo:bar:baz:bat'); // false
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 
@@ -122,7 +119,7 @@ $filePath = __DIR__ . '/config.php';
 $reader = new FileReader($filePath);
 $parser = new PHPParser();
 
-$config = Config::load($reader, $parser); // ConfigValuesInterface
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
@@ -140,16 +137,15 @@ $config->set('path:to:value', 'value');
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\DirectoryReader;
 
-$directory = __DIR__ . '/tests/Fixtures';
+$directory = __DIR__ . '/configs';
 
 $reader = new DirectoryReader($directory, '/^(.+)\.config\.php$/');
 $parser = new PHPParser();
 
-$config = Config::load($reader, $parser); // ConfigValuesInterface
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
@@ -188,6 +184,25 @@ Config::write($config, $parser, $writer); // true
 
 За кодирование конфигураций отвечают классы реализующие интерфейс ```Fi1a\Config\Parsers\ParserInterface```.
 
+## Создание объекта парсера на основе типа файла
+
+Используя фабричный метод ```Fi1a\Config\Parsers\Factory::byFileType``` можно получить объект парсера на основе расширения файла: 
+
+```php
+use Fi1a\Config\Config;
+use Fi1a\Config\Parsers\Factory;
+use Fi1a\Config\Readers\FileReader;
+
+$filePath = __DIR__ . '/config.json';
+
+$reader = new FileReader($filePath);
+$parser = Factory::byFileType($filePath); // Fi1a\Config\Parsers\JSONParser
+
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
+
+$config->get('path:to:value', true);
+```
+
 ## Кодирование в PHP формат
 
 Для кодирование в PHP формат следует использовать класс ```Fi1a\Config\Parsers\PHPParser```.
@@ -203,7 +218,6 @@ Config::write($config, $parser, $writer); // true
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 use Fi1a\Config\Writers\FileWriter;
@@ -214,7 +228,7 @@ $reader = new FileReader($filePath);
 $writer = new FileWriter($filePath);
 $parser = new PHPParser('UTF-8', false, '1tab');
 
-$config = Config::load($reader, $parser); // ConfigValuesInterface
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
@@ -236,7 +250,6 @@ Config::write($config, $parser, $writer); // true
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Parsers\JSONParser;
 use Fi1a\Config\Readers\FileReader;
 
@@ -245,7 +258,7 @@ $filePath = __DIR__ . '/config.json';
 $reader = new FileReader($filePath);
 $parser = new JSONParser(64, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
-$config = Config::load($reader, $parser); // ConfigValuesInterface
+$config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
