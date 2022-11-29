@@ -19,7 +19,13 @@ class Config implements ConfigInterface
      */
     public static function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface
     {
-        return new ConfigValues($parser->decode($reader->read()));
+        $config = [];
+        $strings = (array) $reader->read();
+        foreach ($strings as $string) {
+            $config = array_replace_recursive($config, $parser->decode($string));
+        }
+
+        return new ConfigValues($config);
     }
 
     /**
@@ -37,7 +43,10 @@ class Config implements ConfigInterface
                 throw new InvalidArgumentException('Не передан класс для парсинга конфигурации');
             }
 
-            $config = array_replace_recursive($config, $parser->decode($reader->read()));
+            $strings = (array) $reader->read();
+            foreach ($strings as $string) {
+                $config = array_replace_recursive($config, $parser->decode($string));
+            }
         }
 
         return new ConfigValues($config);

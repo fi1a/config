@@ -11,6 +11,8 @@ interface ReaderInterface
 {
     /**
      * Осуществляет чтение
+     *
+     * @return string[]|string
      */
-    public function read(): string;
+    public function read();
 }

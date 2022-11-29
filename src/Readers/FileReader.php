@@ -27,7 +27,7 @@ class FileReader implements ReaderInterface
     /**
      * @inheritDoc
      */
-    public function read(): string
+    public function read()
     {
         if (!is_file($this->filePath)) {
             throw new ReaderException(sprintf('Файл "%s" не найден', $this->filePath));
