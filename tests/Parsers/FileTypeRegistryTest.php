@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace Fi1a\Unit\Config\Parsers;
 
 use Fi1a\Config\Exceptions\InvalidArgumentException;
-use Fi1a\Config\Parsers\FileExtensionRegistry;
+use Fi1a\Config\Parsers\FileTypeRegistry;
 use Fi1a\Config\Parsers\PHPParser;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Реестр парсеров по расширениям файлов
  */
-class FileExtensionRegistryTest extends TestCase
+class FileTypeRegistryTest extends TestCase
 {
     /**
      * Добавить
      */
     public function testAdd(): void
     {
-        $this->assertTrue(FileExtensionRegistry::add('test1', PHPParser::class));
-        $this->assertFalse(FileExtensionRegistry::add('test1', PHPParser::class));
+        $this->assertTrue(FileTypeRegistry::add('test1', PHPParser::class));
+        $this->assertFalse(FileTypeRegistry::add('test1', PHPParser::class));
     }
 
     /**
@@ -31,7 +31,7 @@ class FileExtensionRegistryTest extends TestCase
     public function testAddException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        FileExtensionRegistry::add('test2', static::class);
+        FileTypeRegistry::add('test2', static::class);
     }
 
     /**
@@ -41,8 +41,8 @@ class FileExtensionRegistryTest extends TestCase
      */
     public function testHas(): void
     {
-        $this->assertFalse(FileExtensionRegistry::has('unknown'));
-        $this->assertTrue(FileExtensionRegistry::has('test1'));
+        $this->assertFalse(FileTypeRegistry::has('unknown'));
+        $this->assertTrue(FileTypeRegistry::has('test1'));
     }
 
     /**
@@ -52,7 +52,7 @@ class FileExtensionRegistryTest extends TestCase
      */
     public function testGet(): void
     {
-        $this->assertEquals(PHPParser::class, FileExtensionRegistry::get('test1'));
+        $this->assertEquals(PHPParser::class, FileTypeRegistry::get('test1'));
     }
 
     /**
@@ -63,7 +63,7 @@ class FileExtensionRegistryTest extends TestCase
     public function testGetException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        FileExtensionRegistry::get('unknown');
+        FileTypeRegistry::get('unknown');
     }
 
     /**
@@ -73,7 +73,7 @@ class FileExtensionRegistryTest extends TestCase
      */
     public function testDelete(): void
     {
-        $this->assertTrue(FileExtensionRegistry::delete('test1'));
-        $this->assertFalse(FileExtensionRegistry::delete('test1'));
+        $this->assertTrue(FileTypeRegistry::delete('test1'));
+        $this->assertFalse(FileTypeRegistry::delete('test1'));
     }
 }

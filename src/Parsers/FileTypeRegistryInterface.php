@@ -7,7 +7,7 @@ namespace Fi1a\Config\Parsers;
 /**
  * Реестр спиннеров
  */
-interface FileExtensionRegistryInterface
+interface FileTypeRegistryInterface
 {
     /**
      * Добавить парсер ассоциированный с расширением файла

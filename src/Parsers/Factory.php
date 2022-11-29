@@ -17,7 +17,7 @@ class Factory implements FactoryInterface
     public static function byFileType(string $filePath): ParserInterface
     {
         $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        $class = FileExtensionRegistry::get($ext);
+        $class = FileTypeRegistry::get($ext);
         /** @psalm-suppress InvalidStringClass */
         $instance = new $class();
         assert($instance instanceof ParserInterface);

@@ -9,7 +9,7 @@ use Fi1a\Config\Exceptions\InvalidArgumentException;
 /**
  * Реестр парсеров по расширениям файлов
  */
-class FileExtensionRegistry implements FileExtensionRegistryInterface
+class FileTypeRegistry implements FileTypeRegistryInterface
 {
     /**
      * @var string[]
