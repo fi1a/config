@@ -35,7 +35,10 @@
   "autoload": {
     "psr-4": {
       "Fi1a\\Config\\": "src"
-    }
+    },
+    "files": [
+      "src/configure.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
