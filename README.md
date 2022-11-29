@@ -76,7 +76,7 @@ $config = Config::batchLoad([
 $config->get('path:to:value', true);
 ```
 
-## Класс со значениями конфигурационных файлов
+## Класс со значениями
 
 Методы   ```Fi1a\Config\Config::load``` и ```Fi1a\Config\Config::batchLoad``` возвращают
 объект ```Fi1a\Config\ConfigValues``` реализующий интерфейс ```Fi1a\Collection\DataType\IPathAccess```
@@ -103,9 +103,13 @@ $register->has('foo:bar:baz:bat'); // false
 
 За чтение конфигураций отвечают классы реализующие интерфейс ```Fi1a\Config\Readers\ReaderInterface```.
 
-## Чтение конфига из файла
+## Чтение конфигурационного файла
 
 Класс ```Fi1a\Config\Readers\FileReader``` осуществляет чтение кодированной строки из файла.
+
+| Аргумент         | Описание     |
+|------------------|--------------|
+| string $filePath | Путь к файлу |
 
 ```php
 use Fi1a\Config\Config;
@@ -124,13 +128,44 @@ $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
 ```
 
+## Чтение конфигурационных файлов из директории
+
+Класс ```Fi1a\Config\Readers\DirectoryReader``` осуществляет чтение файлов конфигураций из переданной директории по маске.
+Аргументы конструктора:
+
+| Аргумент              | Описание               |
+|-----------------------|------------------------|
+| string $directoryPath | Путь до директории     |
+| string $regex         | Макска для имен файлов |
+
+```php
+use Fi1a\Config\Config;
+use Fi1a\Config\ConfigValuesInterface;
+use Fi1a\Config\Parsers\PHPParser;
+use Fi1a\Config\Readers\DirectoryReader;
+
+$directory = __DIR__ . '/tests/Fixtures';
+
+$reader = new DirectoryReader($directory, '/^(.+)\.config\.php$/');
+$parser = new PHPParser();
+
+$config = Config::load($reader, $parser); // ConfigValuesInterface
+
+$config->get('path:to:value', true);
+$config->set('path:to:value', 'value');
+```
+
 ## Запись
 
 За запись конфигураций отвечают классы реализующие интерфейс ```Fi1a\Config\Writers\WriterInterface```.
 
-## Запись конфига в файла
+## Запись конфигурационного файла
 
 Класс ```Fi1a\Config\Writers\FileWriter``` осуществляет запись кодированной строки в файла.
+
+| Аргумент         | Описание               |
+|------------------|------------------------|
+| string $filePath | Путь для записи в файл |
 
 ```php
 use Fi1a\Config\Config;
