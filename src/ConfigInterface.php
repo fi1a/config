@@ -19,6 +19,13 @@ interface ConfigInterface
     public static function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface;
 
     /**
+     * Загружает и возвращает значения конфигурации для нескольких конфигов
+     *
+     * @param ReaderInterface[][]|ParserInterface[][] $batch
+     */
+    public static function batchLoad(array $batch): ConfigValuesInterface;
+
+    /**
      * Запись значений конфигурации
      */
     public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool;

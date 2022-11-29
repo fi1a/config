@@ -17,7 +17,7 @@ interface ParserInterface
     public function decode(string $string): array;
 
     /**
-     * Осуществляет кодирование переданной строки
+     * Осуществляет кодирование в строку
      *
      * @param mixed[] $values
      */

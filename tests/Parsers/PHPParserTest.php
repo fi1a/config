@@ -39,7 +39,7 @@ PHP;
     }
 
     /**
-     * Осуществляет кодирование переданной строки
+     * Осуществляет кодирование в строку
      */
     public function testEncodeShortArraySyntax(): void
     {
@@ -65,7 +65,7 @@ PHP;
     }
 
     /**
-     * Осуществляет кодирование переданной строки
+     * Осуществляет кодирование в строку
      */
     public function testEncodeNotShortArraySyntax(): void
     {
@@ -91,7 +91,7 @@ PHP;
     }
 
     /**
-     * Осуществляет кодирование переданной строки
+     * Осуществляет кодирование в строку
      */
     public function testEncode1TabIndent(): void
     {
@@ -117,7 +117,7 @@ PHP;
     }
 
     /**
-     * Осуществляет кодирование переданной строки
+     * Осуществляет кодирование в строку
      */
     public function testEncodeCustomIndent(): void
     {
