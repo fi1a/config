@@ -19,13 +19,7 @@ class Config implements ConfigInterface
      */
     public static function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface
     {
-        $config = [];
-        $strings = (array) $reader->read();
-        foreach ($strings as $string) {
-            $config = array_replace_recursive($config, $parser->decode($string));
-        }
-
-        return new ConfigValues($config);
+        return new ConfigValues(self::doLoad($reader, $parser));
     }
 
     /**
@@ -43,13 +37,27 @@ class Config implements ConfigInterface
                 throw new InvalidArgumentException('Не передан класс для парсинга конфигурации');
             }
 
-            $strings = (array) $reader->read();
-            foreach ($strings as $string) {
-                $config = array_replace_recursive($config, $parser->decode($string));
-            }
+            $config = self::mergeConfig($config, self::doLoad($reader, $parser));
         }
 
         return new ConfigValues($config);
+    }
+
+    /**
+     * Выполняет загрузку значений конфигурации
+     *
+     * @return mixed[]
+     */
+    private static function doLoad(ReaderInterface $reader, ParserInterface $parser): array
+    {
+        $config = [];
+
+        $strings = (array) $reader->read();
+        foreach ($strings as $string) {
+            $config = self::mergeConfig($config, $parser->decode($string));
+        }
+
+        return $config;
     }
 
     /**
@@ -58,5 +66,35 @@ class Config implements ConfigInterface
     public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool
     {
         return $writer->write($parser->encode($values->getArrayCopy()));
+    }
+
+    /**
+     * Рекурсивно объединяет массивы
+     *
+     * @param mixed[] $source
+     * @param mixed[] $replace
+     *
+     * @return mixed[]
+     *
+     * @psalm-suppress MixedAssignment
+     */
+    protected static function mergeConfig(array $source, array $replace): array
+    {
+        foreach ($replace as $key => $value) {
+            if (is_array($value) && array_key_exists($key, $source) && is_array($source[$key])) {
+                $source[$key] = static::mergeConfig($source[$key], $value);
+
+                continue;
+            }
+            if (is_numeric($key)) {
+                $source[] = $value;
+
+                continue;
+            }
+
+            $source[$key] = $value;
+        }
+
+        return $source;
     }
 }

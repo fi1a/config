@@ -47,7 +47,7 @@ class ConfigTest extends TestCase
             'foo' => [
                 'bar' => 'baz',
                 'qur' => 'hax',
-                'hux' => [4, 5, 6, 7],
+                'hux' => [1, 2, 3, 4, 5, 6, 7],
             ],
             'qux' => 2,
         ];
