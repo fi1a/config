@@ -13,7 +13,7 @@
 Установить этот пакет можно как зависимость, используя Composer.
 
 ``` bash
-composer require fi1a/config ~1.0
+composer require fi1a/config
 ```
 
 ## Пример загрузки и сохранения конфигурационного файла
@@ -77,7 +77,7 @@ $config->get('path:to:value', true);
 ## Класс со значениями
 
 Методы   ```Fi1a\Config\Config::load``` и ```Fi1a\Config\Config::batchLoad``` возвращают
-объект ```Fi1a\Config\ConfigValues```, реализующий интерфейс ```Fi1a\Collection\DataType\IPathAccess```
+объект ```Fi1a\Config\ConfigValues```, реализующий интерфейс ```Fi1a\Collection\DataType\PathAccessInterface```
 из пакета [fi1a/collection](https://github.com/fi1a/collection).
 
 Данный класс позволяет получать доступ к ключам массива по пути (foo:bar:baz).
