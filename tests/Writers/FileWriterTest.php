@@ -38,6 +38,16 @@ PHP;
     /**
      * Осуществляет запись
      */
+    public function testWriteFolderNotFound(): void
+    {
+        $this->expectException(WriterException::class);
+        $filePath = __DIR__ . '/../not-exists/write.php';
+        new FileWriter($filePath);
+    }
+
+    /**
+     * Осуществляет запись
+     */
     public function testWriteNotAccess(): void
     {
         $php = <<<'PHP'
