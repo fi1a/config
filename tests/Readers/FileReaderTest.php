@@ -33,6 +33,15 @@ class FileReaderTest extends TestCase
     }
 
     /**
+     * Папка не найдена
+     */
+    public function testReadFolderNotFound(): void
+    {
+        $this->expectException(ReaderException::class);
+        new FileReader(__DIR__ . '/../not-exists/test.config.php');
+    }
+
+    /**
      * Файл не найден
      */
     public function testReadNotAccess(): void

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Fi1a\Config\Readers;
 
 use Fi1a\Config\Exceptions\ReaderException;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\FileInterface;
+use Fi1a\Filesystem\Filesystem;
+use Fi1a\Filesystem\Utils\LocalUtil;
 
 /**
  * Чтение конфига из файла
@@ -12,16 +16,29 @@ use Fi1a\Config\Exceptions\ReaderException;
 class FileReader implements ReaderInterface
 {
     /**
-     * @var string
+     * @var FileInterface
      */
-    private $filePath;
+    private $file;
 
     /**
-     * Конструктор
+     * @param string|FileInterface $file
      */
-    public function __construct(string $filePath)
+    public function __construct($file)
     {
-        $this->filePath = $filePath;
+        if (is_string($file)) {
+            if (
+                ($folderPath = LocalUtil::peekParentPath($file)) === false
+                || ($folderRealPath = realpath($folderPath)) === false
+            ) {
+                throw new ReaderException(
+                    sprintf('Файл "%s" не найден', htmlspecialchars($file))
+                );
+            }
+            $filesystem = new Filesystem(new LocalAdapter($folderRealPath));
+            $info = pathinfo($file);
+            $file = $filesystem->factoryFile($folderRealPath . '/' . $info['basename']);
+        }
+        $this->file = $file;
     }
 
     /**
@@ -29,13 +46,18 @@ class FileReader implements ReaderInterface
      */
     public function read()
     {
-        if (!is_file($this->filePath)) {
-            throw new ReaderException(sprintf('Файл "%s" не найден', $this->filePath));
+        if (!$this->file->isExist()) {
+            throw new ReaderException(
+                sprintf('Файл "%s" не найден', htmlspecialchars($this->file->getPath()))
+            );
         }
-        if (!is_readable($this->filePath)) {
-            throw new ReaderException(sprintf('Нет прав на чтение файла "%s"', $this->filePath));
+        if (!$this->file->canRead()) {
+            throw new ReaderException(
+                sprintf('Нет прав на чтение файла "%s"', htmlspecialchars($this->file->getPath()))
+            );
         }
+        $content = $this->file->read();
 
-        return file_get_contents($this->filePath);
+        return $content !== false ? $content : '';
     }
 }

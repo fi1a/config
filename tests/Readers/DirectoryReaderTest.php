@@ -25,6 +25,17 @@ class DirectoryReaderTest extends TestCase
     }
 
     /**
+     * Осуществляет чтение
+     */
+    public function testReadSkipByPattern(): void
+    {
+        $reader = new DirectoryReader(__DIR__ . '/../Fixtures', '/(.)+\.txt/');
+        $result = $reader->read();
+        $this->assertIsArray($result);
+        $this->assertCount(0, $result);
+    }
+
+    /**
      * Осуществляет чтение (исключение при отсутствии директории)
      */
     public function testReadDirectoryNotFound(): void

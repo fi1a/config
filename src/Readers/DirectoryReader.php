@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Fi1a\Config\Readers;
 
 use Fi1a\Config\Exceptions\ReaderException;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\FileInterface;
+use Fi1a\Filesystem\Filesystem;
+use Fi1a\Filesystem\FolderInterface;
+use InvalidArgumentException;
 
 /**
  * Чтение конфигов из директории
@@ -17,17 +22,27 @@ class DirectoryReader implements ReaderInterface
     private $regex;
 
     /**
-     * @var string
+     * @var FolderInterface
      */
-    private $directoryPath;
+    private $folder;
 
     /**
-     * Конструктор
+     * @param string|FolderInterface $folder
      */
-    public function __construct(string $directoryPath, string $regex)
+    public function __construct($folder, string $regex)
     {
         $this->regex = $regex;
-        $this->directoryPath = $directoryPath;
+        if (is_string($folder)) {
+            try {
+                $filesystem = new Filesystem(new LocalAdapter($folder));
+            } catch (InvalidArgumentException $exception) {
+                throw new ReaderException(
+                    sprintf('Папка "%s" не найдена', htmlspecialchars($folder))
+                );
+            }
+            $folder = $filesystem->factoryFolder($folder);
+        }
+        $this->folder = $folder;
     }
 
     /**
@@ -36,31 +51,27 @@ class DirectoryReader implements ReaderInterface
     public function read()
     {
         $result = [];
-        if (!is_dir($this->directoryPath)) {
+        if (!$this->folder->canRead()) {
             throw new ReaderException(
-                sprintf('Директория "%s" не найдена', $this->directoryPath)
+                sprintf('Нет прав на чтение папки "%s"', htmlspecialchars($this->folder->getPath()))
             );
         }
-        if (!is_readable($this->directoryPath)) {
-            throw new ReaderException(
-                sprintf('Нет прав на чтение директории "%s"', $this->directoryPath)
-            );
-        }
-        foreach (scandir($this->directoryPath) as $entry) {
-            $filePath = $this->directoryPath . '/' . $entry;
-            if (
-                $entry === '.'
-                || $entry === '..'
-                || !is_file($filePath)
-                || preg_match($this->regex, $entry) <= 0
-            ) {
+        /**
+         * @var FileInterface $file
+         */
+        foreach ($this->folder->allFiles() as $file) {
+            if (preg_match($this->regex, $file->getName()) <= 0) {
                 continue;
             }
-            if (!is_readable($filePath)) {
-                throw new ReaderException(sprintf('Нет прав на чтение файла "%s"', $filePath));
+            if (!$file->canRead()) {
+                throw new ReaderException(
+                    sprintf('Нет прав на чтение файла "%s"', htmlspecialchars($file->getPath()))
+                );
             }
-
-            $result[] = file_get_contents($filePath);
+            $content = $file->read();
+            if ($content) {
+                $result[] = $content;
+            }
         }
 
         return $result;
