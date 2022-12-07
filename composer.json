@@ -14,7 +14,8 @@
   "require": {
     "php": "^7.3 || ^8",
     "fi1a/collection": "^2.0",
-    "fi1a/tokenizer": "^1.1"
+    "fi1a/tokenizer": "^1.1",
+    "fi1a/filesystem": "^1.0"
   },
   "suggest": {
     "ext-json": "*"
