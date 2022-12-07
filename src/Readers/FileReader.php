@@ -8,6 +8,7 @@ use Fi1a\Config\Exceptions\ReaderException;
 use Fi1a\Filesystem\Adapters\LocalAdapter;
 use Fi1a\Filesystem\FileInterface;
 use Fi1a\Filesystem\Filesystem;
+use Fi1a\Filesystem\Utils\LocalUtil;
 
 /**
  * Чтение конфига из файла
@@ -25,8 +26,17 @@ class FileReader implements ReaderInterface
     public function __construct($file)
     {
         if (is_string($file)) {
-            $filesystem = new Filesystem(new LocalAdapter('/'));
-            $file = $filesystem->factoryFile($file);
+            if (
+                ($folderPath = LocalUtil::peekParentPath($file)) === false
+                || ($folderRealPath = realpath($folderPath)) === false
+            ) {
+                throw new ReaderException(
+                    sprintf('Файл "%s" не найден', htmlspecialchars($file))
+                );
+            }
+            $filesystem = new Filesystem(new LocalAdapter($folderRealPath));
+            $info = pathinfo($file);
+            $file = $filesystem->factoryFile($folderRealPath . '/' . $info['basename']);
         }
         $this->file = $file;
     }
