@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Fi1a\Config\Writers;
 
 use Fi1a\Config\Exceptions\WriterException;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\FileInterface;
+use Fi1a\Filesystem\Filesystem;
 
 /**
  * Запись конфигурации в файл
@@ -12,16 +15,20 @@ use Fi1a\Config\Exceptions\WriterException;
 class FileWriter implements WriterInterface
 {
     /**
-     * @var string
+     * @var FileInterface
      */
-    private $filePath;
+    private $file;
 
     /**
-     * Конструктор
+     * @param string|FileInterface $file
      */
-    public function __construct(string $filePath)
+    public function __construct($file)
     {
-        $this->filePath = $filePath;
+        if (is_string($file)) {
+            $filesystem = new Filesystem(new LocalAdapter('/'));
+            $file = $filesystem->factoryFile($file);
+        }
+        $this->file = $file;
     }
 
     /**
@@ -29,13 +36,12 @@ class FileWriter implements WriterInterface
      */
     public function write(string $string): bool
     {
-        if (
-            (is_file($this->filePath) && !is_writable($this->filePath))
-            || !is_writable(dirname($this->filePath))
-        ) {
-            throw new WriterException(sprintf('Нет прав на запись файла "%s"', $this->filePath));
+        if (!$this->file->canWrite()) {
+            throw new WriterException(
+                sprintf('Нет прав на запись файла "%s"', htmlspecialchars($this->file->getPath()))
+            );
         }
 
-        return file_put_contents($this->filePath, $string) !== false;
+        return is_numeric($this->file->write($string));
     }
 }
