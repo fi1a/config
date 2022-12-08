@@ -6,6 +6,9 @@ namespace Fi1a\Unit\Config\Readers;
 
 use Fi1a\Config\Exceptions\ReaderException;
 use Fi1a\Config\Readers\DirectoryReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
+use Fi1a\Filesystem\FolderInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,11 +17,20 @@ use PHPUnit\Framework\TestCase;
 class DirectoryReaderTest extends TestCase
 {
     /**
+     * Возвращает папку
+     */
+    private function getFolder(): FolderInterface
+    {
+        return (new Filesystem(new LocalAdapter(__DIR__ . '/../Resources')))
+            ->factoryFolder(realpath(__DIR__ . '/../Resources'));
+    }
+
+    /**
      * Осуществляет чтение
      */
     public function testRead(): void
     {
-        $reader = new DirectoryReader(__DIR__ . '/../Fixtures', '/(.)+\.php/');
+        $reader = new DirectoryReader($this->getFolder(), '/(.)+\.php/');
         $result = $reader->read();
         $this->assertIsArray($result);
         $this->assertCount(3, $result);
@@ -29,7 +41,7 @@ class DirectoryReaderTest extends TestCase
      */
     public function testReadSkipByPattern(): void
     {
-        $reader = new DirectoryReader(__DIR__ . '/../Fixtures', '/(.)+\.txt/');
+        $reader = new DirectoryReader($this->getFolder(), '/(.)+\.txt/');
         $result = $reader->read();
         $this->assertIsArray($result);
         $this->assertCount(0, $result);
@@ -41,7 +53,8 @@ class DirectoryReaderTest extends TestCase
     public function testReadDirectoryNotFound(): void
     {
         $this->expectException(ReaderException::class);
-        $reader = new DirectoryReader(__DIR__ . '/../not-found', '/(.)+\.php/');
+        $folder = $this->getFolder()->getFolder('not-found');
+        $reader = new DirectoryReader($folder, '/(.)+\.php/');
         $reader->read();
     }
 
@@ -51,9 +64,9 @@ class DirectoryReaderTest extends TestCase
     public function testReadDirectoryNotAccess(): void
     {
         $this->expectException(ReaderException::class);
-        $directory = __DIR__ . '/../Fixtures';
+        $directory = $this->getFolder()->getPath();
         chmod($directory, 0000);
-        $reader = new DirectoryReader($directory, '/(.)+\.php/');
+        $reader = new DirectoryReader($this->getFolder(), '/(.)+\.php/');
         try {
             $reader->read();
         } catch (ReaderException $exception) {
@@ -69,9 +82,9 @@ class DirectoryReaderTest extends TestCase
     public function testReadFileNotAccess(): void
     {
         $this->expectException(ReaderException::class);
-        $directory = __DIR__ . '/../Fixtures';
+        $directory = $this->getFolder()->getPath();
         chmod($directory . '/test.config.php', 0000);
-        $reader = new DirectoryReader($directory, '/(.)+\.php/');
+        $reader = new DirectoryReader($this->getFolder(), '/(.)+\.php/');
         try {
             $reader->read();
         } catch (ReaderException $exception) {

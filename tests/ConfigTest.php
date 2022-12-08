@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Fi1a\Unit\Config;
 
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValues;
 use Fi1a\Config\ConfigValuesInterface;
 use Fi1a\Config\Exceptions\InvalidArgumentException;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 use Fi1a\Config\Writers\FileWriter;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\FileInterface;
+use Fi1a\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +20,15 @@ use PHPUnit\Framework\TestCase;
  */
 class ConfigTest extends TestCase
 {
+    /**
+     * Возвращает файл
+     */
+    private function getFile(string $path): FileInterface
+    {
+        return (new Filesystem(new LocalAdapter(__DIR__ . '/Resources')))
+            ->factoryFile($path);
+    }
+
     /**
      * Загружает и возвращает значения конфигурации
      */
@@ -29,7 +40,7 @@ class ConfigTest extends TestCase
             ],
             'qux' => 1,
         ];
-        $reader = new FileReader(__DIR__ . '/Fixtures/test.config.php');
+        $reader = new FileReader($this->getFile('./test.config.php'));
         $parser = new PHPParser();
         $config = Config::load($reader, $parser);
         $this->assertInstanceOf(ConfigValuesInterface::class, $config);
@@ -54,15 +65,15 @@ class ConfigTest extends TestCase
         $parser = new PHPParser();
         $config = Config::batchLoad([
             [
-                new FileReader(__DIR__ . '/Fixtures/test.config.php'),
+                new FileReader($this->getFile('./test.config.php')),
                 $parser,
             ],
             [
-                new FileReader(__DIR__ . '/Fixtures/test2.config.php'),
+                new FileReader($this->getFile('./test2.config.php')),
                 $parser,
             ],
             [
-                new FileReader(__DIR__ . '/Fixtures/test3.config.php'),
+                new FileReader($this->getFile('./test3.config.php')),
                 $parser,
             ],
         ]);
@@ -83,7 +94,7 @@ class ConfigTest extends TestCase
                 $parser,
             ],
             [
-                new FileReader(__DIR__ . '/Fixtures/test2.config.php'),
+                new FileReader($this->getFile('./test2.config.php')),
                 $parser,
             ],
         ]);
@@ -98,11 +109,11 @@ class ConfigTest extends TestCase
         $parser = new PHPParser();
         Config::batchLoad([
             [
-                new FileReader(__DIR__ . '/Fixtures/test.config.php'),
+                new FileReader($this->getFile('./test.config.php')),
                 $parser,
             ],
             [
-                new FileReader(__DIR__ . '/Fixtures/test2.config.php'),
+                new FileReader($this->getFile('./test2.config.php')),
                 null,
             ],
         ]);
@@ -119,16 +130,16 @@ class ConfigTest extends TestCase
             ],
             'qux' => 1,
         ];
-        $values = new ConfigValues($array);
-        $filePath = __DIR__ . '/Fixtures/write.php';
-        $writer = new FileWriter($filePath);
-        $reader = new FileReader($filePath);
+        $values = Config::create($array);
+        $file = $this->getFile('./write.php');
+        $writer = new FileWriter($file);
+        $reader = new FileReader($file);
         $parser = new PHPParser();
         Config::write($values, $parser, $writer);
-        $this->assertTrue(is_file($filePath));
+        $this->assertTrue($file->isExist());
         $config = Config::load($reader, $parser);
         $this->assertInstanceOf(ConfigValuesInterface::class, $config);
         $this->assertEquals($array, $config->getArrayCopy());
-        unlink($filePath);
+        $file->delete();
     }
 }

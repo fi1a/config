@@ -6,6 +6,9 @@ namespace Fi1a\Unit\Config\Writers;
 
 use Fi1a\Config\Exceptions\WriterException;
 use Fi1a\Config\Writers\FileWriter;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\FileInterface;
+use Fi1a\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,6 +16,15 @@ use PHPUnit\Framework\TestCase;
  */
 class FileWriterTest extends TestCase
 {
+    /**
+     * Возвращает файл
+     */
+    private function getFile(string $path): FileInterface
+    {
+        return (new Filesystem(new LocalAdapter(__DIR__ . '/../Resources')))
+            ->factoryFile($path);
+    }
+
     /**
      * Осуществляет запись
      */
@@ -28,11 +40,11 @@ return [
   'qux' => 1,
 ];
 PHP;
-        $filePath = __DIR__ . '/../Fixtures/write.php';
-        $writer = new FileWriter($filePath);
+        $file = $this->getFile('./write.php');
+        $writer = new FileWriter($file);
         $this->assertTrue($writer->write($php));
-        $this->assertTrue(is_file($filePath));
-        unlink($filePath);
+        $this->assertTrue($file->isExist());
+        $file->delete();
     }
 
     /**
@@ -41,8 +53,8 @@ PHP;
     public function testWriteFolderNotFound(): void
     {
         $this->expectException(WriterException::class);
-        $filePath = __DIR__ . '/../not-exists/write.php';
-        new FileWriter($filePath);
+        $writer = new FileWriter($this->getFile('./not-exists/write.php'));
+        $writer->write('');
     }
 
     /**
@@ -62,13 +74,13 @@ return [
 PHP;
 
         $this->expectException(WriterException::class);
-        $filePath = __DIR__ . '/../Fixtures/write.php';
-        chmod(dirname($filePath), 0000);
-        $writer = new FileWriter($filePath);
+        $file = $this->getFile('./write.php');
+        chmod($file->getParent()->getPath(), 0111);
+        $writer = new FileWriter($file);
         try {
             $writer->write($php);
         } catch (WriterException $exception) {
-            chmod(dirname($filePath), 0775);
+            chmod($file->getParent()->getPath(), 0775);
 
             throw $exception;
         }
