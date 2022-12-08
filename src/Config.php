@@ -19,7 +19,7 @@ class Config implements ConfigInterface
      */
     public static function load(ReaderInterface $reader, ParserInterface $parser): ConfigValuesInterface
     {
-        return new ConfigValues(self::doLoad($reader, $parser));
+        return self::create(self::doLoad($reader, $parser));
     }
 
     /**
@@ -40,7 +40,7 @@ class Config implements ConfigInterface
             $config = self::mergeConfig($config, self::doLoad($reader, $parser));
         }
 
-        return new ConfigValues($config);
+        return self::create($config);
     }
 
     /**
@@ -66,6 +66,14 @@ class Config implements ConfigInterface
     public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool
     {
         return $writer->write($parser->encode($values->getArrayCopy()));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function create(array $values = []): ConfigValuesInterface
+    {
+        return new ConfigValues($values);
     }
 
     /**

@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Fi1a\Config\Readers;
 
 use Fi1a\Config\Exceptions\ReaderException;
-use Fi1a\Filesystem\Adapters\LocalAdapter;
 use Fi1a\Filesystem\FileInterface;
-use Fi1a\Filesystem\Filesystem;
 use Fi1a\Filesystem\FolderInterface;
-use InvalidArgumentException;
 
 /**
  * Чтение конфигов из директории
@@ -26,22 +23,9 @@ class DirectoryReader implements ReaderInterface
      */
     private $folder;
 
-    /**
-     * @param string|FolderInterface $folder
-     */
-    public function __construct($folder, string $regex)
+    public function __construct(FolderInterface $folder, string $regex)
     {
         $this->regex = $regex;
-        if (is_string($folder)) {
-            try {
-                $filesystem = new Filesystem(new LocalAdapter($folder));
-            } catch (InvalidArgumentException $exception) {
-                throw new ReaderException(
-                    sprintf('Папка "%s" не найдена', htmlspecialchars($folder))
-                );
-            }
-            $folder = $filesystem->factoryFolder($folder);
-        }
         $this->folder = $folder;
     }
 

@@ -29,4 +29,11 @@ interface ConfigInterface
      * Запись значений конфигурации
      */
     public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool;
+
+    /**
+     * Создает и возвращает новые значения конфигурации
+     *
+     * @param mixed[] $values
+     */
+    public static function create(array $values = []): ConfigValuesInterface;
 }

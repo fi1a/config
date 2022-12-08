@@ -27,11 +27,16 @@ use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 use Fi1a\Config\Writers\FileWriter;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
 $filePath = __DIR__ . '/config.php';
 
-$reader = new FileReader($filePath);
-$writer = new FileWriter($filePath);
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
+$file = $filesystem->factoryFile('./config.php');
+
+$reader = new FileReader($file);
+$writer = new FileWriter($file);
 
 $parser = new PHPParser();
 
@@ -53,20 +58,24 @@ Config::write($config, $parser, $writer); // true
 use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
 $parser = new PHPParser();
 
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
+
 $config = Config::batchLoad([
     [
-        new FileReader(__DIR__ . '/config1.php'),
+        new FileReader($filesystem->factoryFile('./config1.php')),
         $parser,
     ],
     [
-        new FileReader(__DIR__ . '/config2.php'),
+        new FileReader($filesystem->factoryFile('./config2.php')),
         $parser,
     ],
     [
-        new FileReader(__DIR__ . '/config3.php'),
+        new FileReader($filesystem->factoryFile('./config3.php')),
         $parser,
     ],
 ]); // Fi1a\Config\ConfigValuesInterface
@@ -82,10 +91,12 @@ $config->get('path:to:value', true);
 
 Данный класс позволяет получать доступ к ключам массива по пути (foo:bar:baz).
 
-```php
-use Fi1a\Config\ConfigValues;
+Для создания нового объекта со значениями можно использовать метод `Fi1a\Config\Config::create`:
 
-$register = new ConfigValues(['foo' => ['bar' => ['baz' => 1], 'qux' => 2,],]);
+```php
+use Fi1a\Config\Config;
+
+$register = Config::create(['foo' => ['bar' => ['baz' => 1], 'qux' => 2,],]);
 
 $register->get('foo:bar:baz'); // 1
 $register->get('foo:qux'); // 2
@@ -113,10 +124,12 @@ $register->has('foo:bar:baz:bat'); // false
 use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.php';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$reader = new FileReader($filePath);
+$reader = new FileReader($filesystem->factoryFile('./config.php'));
 $parser = new PHPParser();
 
 $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
@@ -139,10 +152,12 @@ $config->set('path:to:value', 'value');
 use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\DirectoryReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$directory = __DIR__ . '/configs';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$reader = new DirectoryReader($directory, '/^(.+)\.config\.php$/');
+$reader = new DirectoryReader($filesystem->factoryFolder('.'), '/^(.+)\.config\.php$/');
 $parser = new PHPParser();
 
 $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
@@ -165,17 +180,18 @@ $config->set('path:to:value', 'value');
 
 ```php
 use Fi1a\Config\Config;
-use Fi1a\Config\ConfigValues;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Writers\FileWriter;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.php';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$writer = new FileWriter($filePath);
+$writer = new FileWriter($filesystem->factoryFile('./config.php'));
 
 $parser = new PHPParser();
 
-$config = new ConfigValues(['foo' => 'bar', 'baz' => [1, 2, 3]]);
+$config = Config::create(['foo' => 'bar', 'baz' => [1, 2, 3]]);
 
 Config::write($config, $parser, $writer); // true
 ```
@@ -192,11 +208,14 @@ Config::write($config, $parser, $writer); // true
 use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\Factory;
 use Fi1a\Config\Readers\FileReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.json';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$reader = new FileReader($filePath);
-$parser = Factory::byFileType($filePath); // Fi1a\Config\Parsers\JSONParser
+$file = $filesystem->factoryFile('./config.json');
+$reader = new FileReader($file);
+$parser = Factory::byFileType($file->getPath()); // Fi1a\Config\Parsers\JSONParser
 
 $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 
@@ -221,11 +240,14 @@ use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\PHPParser;
 use Fi1a\Config\Readers\FileReader;
 use Fi1a\Config\Writers\FileWriter;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.php';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$reader = new FileReader($filePath);
-$writer = new FileWriter($filePath);
+$file = $filesystem->factoryFile('./config.php');
+$reader = new FileReader($file);
+$writer = new FileWriter($file);
 $parser = new PHPParser('UTF-8', false, '1tab');
 
 $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
@@ -252,10 +274,12 @@ Config::write($config, $parser, $writer); // true
 use Fi1a\Config\Config;
 use Fi1a\Config\Parsers\JSONParser;
 use Fi1a\Config\Readers\FileReader;
+use Fi1a\Filesystem\Adapters\LocalAdapter;
+use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.json';
+$filesystem = new Filesystem(new LocalAdapter(__DIR__));
 
-$reader = new FileReader($filePath);
+$reader = new FileReader($filesystem->factoryFile('./config.json'));
 $parser = new JSONParser(64, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
 $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface

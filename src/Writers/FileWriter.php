@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Fi1a\Config\Writers;
 
 use Fi1a\Config\Exceptions\WriterException;
-use Fi1a\Filesystem\Adapters\LocalAdapter;
 use Fi1a\Filesystem\FileInterface;
-use Fi1a\Filesystem\Filesystem;
-use Fi1a\Filesystem\Utils\LocalUtil;
 
 /**
  * Запись конфигурации в файл
@@ -20,24 +17,8 @@ class FileWriter implements WriterInterface
      */
     private $file;
 
-    /**
-     * @param string|FileInterface $file
-     */
-    public function __construct($file)
+    public function __construct(FileInterface $file)
     {
-        if (is_string($file)) {
-            if (
-                ($folderPath = LocalUtil::peekParentPath($file)) === false
-                || ($folderRealPath = realpath($folderPath)) === false
-            ) {
-                throw new WriterException(
-                    sprintf('Родительской папки у файла "%s" не существует', htmlspecialchars($file))
-                );
-            }
-            $filesystem = new Filesystem(new LocalAdapter($folderRealPath));
-            $info = pathinfo($file);
-            $file = $filesystem->factoryFile($folderRealPath . '/' . $info['basename']);
-        }
         $this->file = $file;
     }
 
@@ -46,6 +27,15 @@ class FileWriter implements WriterInterface
      */
     public function write(string $string): bool
     {
+        $folder = $this->file->getParent();
+        if ($folder && !$folder->isExist()) {
+            throw new WriterException(
+                sprintf(
+                    'Папка "%s" не существует',
+                    htmlspecialchars($folder->getPath())
+                )
+            );
+        }
         if (!$this->file->canWrite()) {
             throw new WriterException(
                 sprintf('Нет прав на запись файла "%s"', htmlspecialchars($this->file->getPath()))
