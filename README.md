@@ -30,8 +30,6 @@ use Fi1a\Config\Writers\FileWriter;
 use Fi1a\Filesystem\Adapters\LocalAdapter;
 use Fi1a\Filesystem\Filesystem;
 
-$filePath = __DIR__ . '/config.php';
-
 $filesystem = new Filesystem(new LocalAdapter(__DIR__));
 $file = $filesystem->factoryFile('./config.php');
 
