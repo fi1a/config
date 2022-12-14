@@ -135,7 +135,7 @@ class ConfigTest extends TestCase
         $writer = new FileWriter($file);
         $reader = new FileReader($file);
         $parser = new PHPParser();
-        Config::write($values, $parser, $writer);
+        Config::write($values, $writer, $parser);
         $this->assertTrue($file->isExist());
         $config = Config::load($reader, $parser);
         $this->assertInstanceOf(ConfigValuesInterface::class, $config);

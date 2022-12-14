@@ -28,7 +28,7 @@ interface ConfigInterface
     /**
      * Запись значений конфигурации
      */
-    public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool;
+    public static function write(ConfigValuesInterface $values, WriterInterface $writer, ParserInterface $parser): bool;
 
     /**
      * Создает и возвращает новые значения конфигурации
