@@ -63,7 +63,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public static function write(ConfigValuesInterface $values, ParserInterface $parser, WriterInterface $writer): bool
+    public static function write(ConfigValuesInterface $values, WriterInterface $writer, ParserInterface $parser): bool
     {
         return $writer->write($parser->encode($values->getArrayCopy()));
     }

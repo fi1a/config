@@ -43,7 +43,7 @@ $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
 
-Config::write($config, $parser, $writer); // true
+Config::write($config, $writer, $parser); // true
 ```
 
 ## Пример загрузки конфигурационных файлов
@@ -191,7 +191,7 @@ $parser = new PHPParser();
 
 $config = Config::create(['foo' => 'bar', 'baz' => [1, 2, 3]]);
 
-Config::write($config, $parser, $writer); // true
+Config::write($config, $writer, $parser); // true
 ```
 
 ## Кодирование
@@ -253,7 +253,7 @@ $config = Config::load($reader, $parser); // Fi1a\Config\ConfigValuesInterface
 $config->get('path:to:value', true);
 $config->set('path:to:value', 'value');
 
-Config::write($config, $parser, $writer); // true
+Config::write($config, $writer, $parser); // true
 ```
 
 ## Кодирование в JSON формат
