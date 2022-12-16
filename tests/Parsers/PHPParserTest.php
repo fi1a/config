@@ -156,7 +156,26 @@ PHP;
             'qux' => 1,
             'cls' => new SetStateA(),
         ];
-        $php = <<<'PHP'
+
+        if (version_compare(phpversion(), '8.2.0', '>=')) {
+            $php = <<<'PHP'
+<?php
+
+return [
+    'foo' => [
+        'bar' => 'baz',
+    ],
+    'qux' => 1,
+    'cls' => \Fi1a\Unit\Config\Fixtures\SetStateA::__set_state([
+        'foo' => 'bar',
+        'baz' => \Fi1a\Unit\Config\Fixtures\SetStateB::__set_state([
+            'qux' => 'quz',
+        ]),
+    ]),
+];
+PHP;
+        } else {
+            $php = <<<'PHP'
 <?php
 
 return [
@@ -172,6 +191,7 @@ return [
     ]),
 ];
 PHP;
+        }
 
         $parser = new PHPParser('UTF-8', true);
         $this->assertEquals($php, $parser->encode($array));
@@ -189,7 +209,25 @@ PHP;
             'qux' => 1,
             'cls' => new SetStateA(),
         ];
-        $php = <<<'PHP'
+        if (version_compare(phpversion(), '8.2.0', '>=')) {
+            $php = <<<'PHP'
+<?php
+
+return array(
+    'foo' => array(
+        'bar' => 'baz',
+    ),
+    'qux' => 1,
+    'cls' => \Fi1a\Unit\Config\Fixtures\SetStateA::__set_state(array(
+        'foo' => 'bar',
+        'baz' => \Fi1a\Unit\Config\Fixtures\SetStateB::__set_state(array(
+            'qux' => 'quz',
+        )),
+    )),
+);
+PHP;
+        } else {
+            $php = <<<'PHP'
 <?php
 
 return array(
@@ -205,6 +243,7 @@ return array(
     )),
 );
 PHP;
+        }
 
         $parser = new PHPParser('UTF-8', false);
         $this->assertEquals($php, $parser->encode($array));
@@ -222,7 +261,21 @@ PHP;
             'qux' => 1,
             'cls' => new SetStateC(),
         ];
-        $php = <<<'PHP'
+
+        if (version_compare(phpversion(), '8.2.0', '>=')) {
+            $php = <<<'PHP'
+<?php
+
+return array(
+    'foo' => array(
+        'bar' => 'baz',
+    ),
+    'qux' => 1,
+    'cls' => \Fi1a\Unit\Config\Fixtures\SetStateC::__set_state(array()),
+);
+PHP;
+        } else {
+            $php = <<<'PHP'
 <?php
 
 return array(
@@ -233,6 +286,7 @@ return array(
     'cls' => Fi1a\Unit\Config\Fixtures\SetStateC::__set_state(array()),
 );
 PHP;
+        }
 
         $parser = new PHPParser('UTF-8', false);
         $this->assertEquals($php, $parser->encode($array));
@@ -247,7 +301,26 @@ PHP;
             'foo' => [1, 2, 3],
             'bar' => new SetStateA(),
         ];
-        $php = <<<'PHP'
+        if (version_compare(phpversion(), '8.2.0', '>=')) {
+            $php = <<<'PHP'
+<?php
+
+return [
+    'foo' => [
+        0 => 1,
+        1 => 2,
+        2 => 3,
+    ],
+    'bar' => \Fi1a\Unit\Config\Fixtures\SetStateA::__set_state([
+        'foo' => 'bar',
+        'baz' => \Fi1a\Unit\Config\Fixtures\SetStateB::__set_state([
+            'qux' => 'quz',
+        ]),
+    ]),
+];
+PHP;
+        } else {
+            $php = <<<'PHP'
 <?php
 
 return [
@@ -264,6 +337,7 @@ return [
     ]),
 ];
 PHP;
+        }
 
         $parser = new PHPParser('UTF-8', true);
         $this->assertEquals($php, $parser->encode($array));
